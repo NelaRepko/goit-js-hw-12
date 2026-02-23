@@ -141,5 +141,13 @@
 
 /* Приховати кнопку або лоадер через is-hidden */
 .is-hidden {
-  display: none !important;
+  display: none;
+}
+
+.end-message {
+  text-align: center;
+  font-size: 18px;
+  color: #586de3;
+  margin: 20px auto;
+  font-weight: 500;
 }

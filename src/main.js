@@ -9,25 +9,29 @@ const form = document.querySelector('.form');
 const input = form.querySelector('input[name="search-text"]');
 const loadMoreBtn = document.querySelector('.load-more');
 
+// --- Повідомлення про кінець / пусту галерею ---
+let endMessageDiv = document.querySelector('.end-message');
+if (!endMessageDiv) {
+  endMessageDiv = document.createElement('div');
+  endMessageDiv.className = 'end-message is-hidden';
+  endMessageDiv.textContent = "We're sorry, but you've reached the end of search results.";
+  document.querySelector('main').appendChild(endMessageDiv);
+}
+
 // --- Глобальні змінні ---
 let currentQuery = '';
 let currentPage = 1;
 let totalHits = 0;
+let loadedImages = [];
 
-// --- Функція для оновлення кнопки Load More ---
+// --- Функція оновлення кнопки Load More ---
 function updateLoadMoreVisibility() {
-  if (currentPage * 15 >= totalHits) {
+  if (loadedImages.length >= totalHits) {
     hideLoadMoreButton();
-    if (currentPage > 1) { // повідомляємо тільки при натисканні Load More
-      iziToast.info({
-        title: 'Info',
-        message: "We're sorry, but you've reached the end of search results.",
-        position: 'topRight',
-        timeout: 5000
-      });
-    }
+    endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
   } else {
     showLoadMoreButton();
+    endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення
   }
 }
 
@@ -47,8 +51,10 @@ form.addEventListener('submit', async (event) => {
 
   currentQuery = query;
   currentPage = 1;
+  loadedImages = [];
   clearGallery();
   hideLoadMoreButton();
+  endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення перед новим пошуком
 
   showLoader();
   try {
@@ -57,24 +63,23 @@ form.addEventListener('submit', async (event) => {
     totalHits = data.totalHits;
 
     if (!hits || hits.length === 0) {
-      iziToast.warning({
-        title: 'No results',
-        message: 'Sorry, there are no images matching your search query. Please try again!',
-        position: 'topRight',
-        timeout: 5000
-      });
+      endMessageDiv.textContent = "Sorry, there are no images matching your search query.";
+      endMessageDiv.classList.remove('is-hidden'); // показуємо по центру
       return;
     }
 
-    // --- Відображаємо першу групу ---
-    createGallery(hits);
+    loadedImages = [...hits];
+    createGallery(loadedImages);
 
-    // --- Показуємо Load More, якщо є ще сторінки ---
-    if (totalHits > hits.length) {
-      showLoadMoreButton();
-    }
+    updateLoadMoreVisibility();
 
   } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: `Failed to fetch images: ${error.message}`,
+      position: 'topRight',
+      timeout: 5000
+    });
     console.error('Error fetching images:', error);
   } finally {
     hideLoader();
@@ -84,6 +89,8 @@ form.addEventListener('submit', async (event) => {
 // --- Обробник кнопки Load More ---
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
+  hideLoadMoreButton();        // ховаємо кнопку одразу
+  endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення під час завантаження
   showLoader();
 
   try {
@@ -91,25 +98,12 @@ loadMoreBtn.addEventListener('click', async () => {
     const hits = data.hits;
 
     if (!hits || hits.length === 0) {
-      hideLoadMoreButton();
+      endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
       return;
     }
 
-    // --- Додаємо нові елементи до існуючої галереї ---
-    const galleryContainer = document.querySelector('.gallery');
-
-    // перетворюємо існуючі li в об’єкти
-    const existingImages = [...galleryContainer.querySelectorAll('li')].map(li => ({
-      webformatURL: li.querySelector('img').src,
-      largeImageURL: li.querySelector('a').href,
-      likes: parseInt(li.querySelector('.info-values p:nth-child(1)').textContent),
-      views: parseInt(li.querySelector('.info-values p:nth-child(2)').textContent),
-      comments: parseInt(li.querySelector('.info-values p:nth-child(3)').textContent),
-      downloads: parseInt(li.querySelector('.info-values p:nth-child(4)').textContent),
-      tags: li.querySelector('img').alt
-    }));
-
-    createGallery([...existingImages, ...hits]);
+    loadedImages.push(...hits);
+    createGallery(loadedImages);
 
     // --- Плавна прокрутка ---
     const galleryItem = document.querySelector('.gallery li');
@@ -122,7 +116,14 @@ loadMoreBtn.addEventListener('click', async () => {
     }
 
     updateLoadMoreVisibility();
+
   } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: `Failed to load more images: ${error.message}`,
+      position: 'topRight',
+      timeout: 5000
+    });
     console.error('Error fetching more images:', error);
   } finally {
     hideLoader();
