@@ -29,6 +29,12 @@ function updateLoadMoreVisibility() {
   if (loadedImages.length >= totalHits) {
     hideLoadMoreButton();
     endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
+    iziToast.info({
+      title: 'Info',
+      message: "We're sorry, but you've reached the end of search results.",
+      position: 'center',
+      timeout: 5000
+    });
   } else {
     showLoadMoreButton();
     endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення
@@ -65,6 +71,12 @@ form.addEventListener('submit', async (event) => {
     if (!hits || hits.length === 0) {
       endMessageDiv.textContent = "Sorry, there are no images matching your search query.";
       endMessageDiv.classList.remove('is-hidden'); // показуємо по центру
+      iziToast.warning({
+        title: 'No results',
+        message: 'Sorry, there are no images matching your search query.',
+        position: 'center',
+        timeout: 5000
+      });
       return;
     }
 
@@ -99,6 +111,12 @@ loadMoreBtn.addEventListener('click', async () => {
 
     if (!hits || hits.length === 0) {
       endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
+      iziToast.info({
+        title: 'Info',
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'center',
+        timeout: 5000
+      });
       return;
     }
 
