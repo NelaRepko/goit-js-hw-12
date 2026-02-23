@@ -18,12 +18,14 @@ let totalHits = 0;
 function updateLoadMoreVisibility() {
   if (currentPage * 15 >= totalHits) {
     hideLoadMoreButton();
-    iziToast.info({
-      title: 'Info',
-      message: "We're sorry, but you've reached the end of search results.",
-      position: 'topRight',
-      timeout: 5000
-    });
+    if (currentPage > 1) { // повідомляємо тільки при натисканні Load More
+      iziToast.info({
+        title: 'Info',
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+        timeout: 5000
+      });
+    }
   } else {
     showLoadMoreButton();
   }
@@ -43,7 +45,6 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  // --- Новий пошук ---
   currentQuery = query;
   currentPage = 1;
   clearGallery();
@@ -55,7 +56,7 @@ form.addEventListener('submit', async (event) => {
     const hits = data.hits;
     totalHits = data.totalHits;
 
-    if (hits.length === 0) {
+    if (!hits || hits.length === 0) {
       iziToast.warning({
         title: 'No results',
         message: 'Sorry, there are no images matching your search query. Please try again!',
@@ -65,8 +66,14 @@ form.addEventListener('submit', async (event) => {
       return;
     }
 
+    // --- Відображаємо першу групу ---
     createGallery(hits);
-    updateLoadMoreVisibility();
+
+    // --- Показуємо Load More, якщо є ще сторінки ---
+    if (totalHits > hits.length) {
+      showLoadMoreButton();
+    }
+
   } catch (error) {
     console.error('Error fetching images:', error);
   } finally {
@@ -83,8 +90,15 @@ loadMoreBtn.addEventListener('click', async () => {
     const data = await getImagesByQuery(currentQuery, currentPage);
     const hits = data.hits;
 
+    if (!hits || hits.length === 0) {
+      hideLoadMoreButton();
+      return;
+    }
+
     // --- Додаємо нові елементи до існуючої галереї ---
     const galleryContainer = document.querySelector('.gallery');
+
+    // перетворюємо існуючі li в об’єкти
     const existingImages = [...galleryContainer.querySelectorAll('li')].map(li => ({
       webformatURL: li.querySelector('img').src,
       largeImageURL: li.querySelector('a').href,
@@ -114,3 +128,4 @@ loadMoreBtn.addEventListener('click', async () => {
     hideLoader();
   }
 });
+

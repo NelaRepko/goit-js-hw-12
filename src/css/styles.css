@@ -76,3 +76,71 @@
     transform: rotate(360deg);
   }
 }
+
+/* Контейнер кнопки + лоадер */
+.gallery-footer {
+  display: flex;
+  justify-content: center;      /* по горизонталі */
+  align-items: center;          /* вирівнювання по вертикалі */
+  flex-direction: column;       /* кнопка зверху, лоадер під нею */
+  gap: 16px;                    /* відстань між кнопкою і лоадером */
+  margin-top: 24px;
+  min-height: 80px;             /* простір для кнопки та лоадера, щоб не стрибав layout */
+  transition: all 0.3s ease;    /* плавне з’явлення елементів */
+}
+
+/* Кнопка Load More стилізована як Search */
+.load-more {
+  height: 40px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #586de3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 250ms ease, transform 0.3s ease;
+}
+
+.load-more:hover {
+  background-color: #112c90;
+  transform: translateY(-2px);
+}
+
+/* Лоадер */
+.loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  opacity: 0;                 /* початково прихований */
+  pointer-events: none;       /* не блокує кнопку */
+}
+
+/* Клас для активного лоадера */
+.loader-wrapper.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* css-spinner */
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ccc;
+  border-top-color: #4e75ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Приховати кнопку або лоадер через is-hidden */
+.is-hidden {
+  display: none !important;
+}
+
