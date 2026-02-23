@@ -5,14 +5,74 @@
   |============================
 */
 /* Common styles */
+@import url('./animations.css');
 @import url('./reset.css');
 @import url('./base.css');
-@import url('./container.css');
-@import url('./animations.css');
 
-/* Sections style */
-@import url('./header.css');
-@import url('./vite-promo.css');
-@import url('./badges.css');
-@import url('./back-link.css');
-@import url('./footer.css');
+/* Центрування форми */
+.form {
+  display: flex;
+  justify-content: center;   /* по горизонталі */
+  align-items: center;       /* по вертикалі (якщо потрібно) */
+  gap: 12px;
+  margin: 40px auto;
+}
+
+/* Стиль інпута */
+.form input {
+  width: 272px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #808fb0ef;
+  border-radius: 4px;
+  font-size: 16px;
+  outline: none;
+}
+
+.form input:focus {
+  border-color: #586de3;
+}
+
+/* Стиль кнопки */
+.form button {
+  height: 40px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #586de3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 250ms ease;
+}
+
+.form button:hover {
+  background-color: #112c90;
+}
+
+
+.loader-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.is-hidden {
+  display: none;
+}
+
+/* css-loader (spinner) */
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ccc;
+  border-top-color: #4e75ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
