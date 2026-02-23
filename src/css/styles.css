@@ -4,7 +4,6 @@
   | default @import url()
   |============================
 */
-/* Common styles */
 @import url('./animations.css');
 @import url('./reset.css');
 @import url('./base.css');
@@ -12,8 +11,8 @@
 /* Центрування форми */
 .form {
   display: flex;
-  justify-content: center;   /* по горизонталі */
-  align-items: center;       /* по вертикалі (якщо потрібно) */
+  justify-content: center;
+  align-items: center;
   gap: 12px;
   margin: 40px auto;
 }
@@ -50,46 +49,83 @@
   background-color: #112c90;
 }
 
+/* ================= GALLERY ================= */
 
-.loader-wrapper {
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: 16px;
+
+  max-width: 1128px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  align-items: start;
+}
+
+/* КАРТКА */
+.gallery-item {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
-  margin-top: 30px;
+  flex-direction: column;
 }
 
-.is-hidden {
-  display: none;
+/* ПОСИЛАННЯ */
+.gallery-link {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
 }
 
-/* css-loader (spinner) */
-.loader {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #ccc;
-  border-top-color: #4e75ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+/* ЗОБРАЖЕННЯ */
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+/* ====== INFO BLOCK ====== */
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
 }
 
-/* Контейнер кнопки + лоадер */
+/* Ряд заголовків */
+.info-titles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Ряд значень */
+.info-values {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+}
+
+/* ================= FOOTER ================= */
+
 .gallery-footer {
   display: flex;
-  justify-content: center;      /* по горизонталі */
-  align-items: center;          /* вирівнювання по вертикалі */
-  flex-direction: column;       /* кнопка зверху, лоадер під нею */
-  gap: 16px;                    /* відстань між кнопкою і лоадером */
-  margin-top: 24px;
-  min-height: 80px;             /* простір для кнопки та лоадера, щоб не стрибав layout */
-  transition: all 0.3s ease;    /* плавне з’явлення елементів */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 40px;
+  margin-top: 16px;
 }
 
-/* Кнопка Load More стилізована як Search */
+/* Кнопка Load More */
 .load-more {
   height: 40px;
   padding: 0 24px;
@@ -107,23 +143,39 @@
   transform: translateY(-2px);
 }
 
-/* Лоадер */
+.is-hidden {
+  display: none;
+}
+
+/* Повідомлення */
+.end-message {
+  text-align: center;
+  font-size: 18px;
+  color: #586de3;
+  font-weight: 500;
+  display: none;
+}
+
+.end-message.show {
+  display: block;
+}
+
+/* ================= LOADER ================= */
+
 .loader-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   transition: opacity 0.3s ease;
-  opacity: 0;                 /* початково прихований */
-  pointer-events: none;       /* не блокує кнопку */
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Клас для активного лоадера */
 .loader-wrapper.show {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* css-spinner */
 .loader {
   width: 48px;
   height: 48px;
@@ -134,20 +186,6 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-/* Приховати кнопку або лоадер через is-hidden */
-.is-hidden {
-  display: none;
-}
-
-.end-message {
-  text-align: center;
-  font-size: 18px;
-  color: #586de3;
-  margin: 20px auto;
-  font-weight: 500;
-}

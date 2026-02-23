@@ -10,10 +10,24 @@ const newBox = new  SimpleLightbox(".gallery a", {
 
 // Ця функція повинна приймати масив images, створювати HTML-розмітку для галереї, додавати її в контейнер галереї та викликати метод екземпляра SimpleLightbox refresh(). Нічого не повертає.
 function createGallery(images) {
+  const galleryContainer = document.querySelector('.gallery');
 
-const galleryContainer = document.querySelector('.gallery');
+  // --- Перевірка кратності 3 ---
+  const remainder = images.length % 3;
+  if (remainder !== 0) {
+    const emptyCount = 3 - remainder;
+    for (let i = 0; i < emptyCount; i++) {
+      images.push(""); // додаємо "порожні фото"
+    }
+  }
 
-  const markup = images.map(image => `
+  const markup = images.map(image => {
+    if (!image) {
+      // якщо порожній елемент — додаємо порожню li для вирівнювання
+      return `<li class="gallery-item empty-item"></li>`;
+    }
+
+    return `
 <li class="gallery-item">
   <a class="gallery-link" href="${image.largeImageURL}">
     <img 
@@ -37,11 +51,12 @@ const galleryContainer = document.querySelector('.gallery');
     </div>
   </div>
 </li>
-  `).join('');
+    `;
+  }).join('');
 
-  galleryContainer.innerHTML = markup; //додаємо елементи галереї в контейнер
+  galleryContainer.innerHTML = markup;
 
-   // --- Додаємо стилі контейнеру ---
+  // --- Стилі контейнера ---
   galleryContainer.style.display = "flex";
   galleryContainer.style.flexWrap = "wrap";
   galleryContainer.style.gap = "24px";
@@ -49,58 +64,53 @@ const galleryContainer = document.querySelector('.gallery');
   galleryContainer.style.alignItems = "center";
   galleryContainer.style.listStyle = "none";
   galleryContainer.style.maxWidth = "1200px";
-  galleryContainer.style.margin = "0 auto";        // центр UL на сторінці
+  galleryContainer.style.margin = "0 auto";
 
-  // --- Додаємо стилі для кожної li ---
+  // --- Стилі для кожної li ---
   const items = galleryContainer.querySelectorAll("li");
   items.forEach(item => {
     item.style.flex = "1 1 360px";
     item.style.height = "200px";
-//    item.style.maxWidth = "100%";
-    item.style.border = "1px solid #808080";
+    item.style.border = item.classList.contains("empty-item") ? "none" : "1px solid #808080";
     item.style.overflow = "hidden";
-//    item.style.justifyContent = "center";
-//    item.style.alignItems = "center";
     item.style.width = "360px";
     item.style.display = "flex";
     item.style.flexDirection = "column";
+    item.style.background = item.classList.contains("empty-item") ? "transparent" : "white";
   });
-    // --- Стилі для img ---
-const imgs = galleryContainer.querySelectorAll("img");
-imgs.forEach(img => {
-  img.style.width = "100%";
-//  img.style.height = "100%";
-  img.style.height = "160px";
-  img.style.objectFit = "cover"; // картинка займає всю li
-  img.style.display = "block";
-});
 
-const infos = galleryContainer.querySelectorAll(".info");
-infos.forEach(info => {
-  info.style.display = "flex";
-  info.style.flexDirection = "column"; // колонки для заголовків і значень
-  info.style.alignItems = "center";
-  info.style.padding = "4px";
-  info.style.fontSize = "12px";
+  // --- Стилі для img ---
+  const imgs = galleryContainer.querySelectorAll("img");
+  imgs.forEach(img => {
+    img.style.width = "100%";
+    img.style.height = "160px";
+    img.style.objectFit = "cover";
+    img.style.display = "block";
+  });
 
-  const titles = info.querySelector(".info-titles");
-  const values = info.querySelector(".info-values");
+  // --- Стилі для info ---
+  const infos = galleryContainer.querySelectorAll(".info");
+  infos.forEach(info => {
+    info.style.display = "flex";
+    info.style.flexDirection = "column";
+    info.style.alignItems = "center";
+    info.style.padding = "4px";
+    info.style.fontSize = "12px";
 
-  // перша лінійка: заголовки
-  titles.style.display = "flex";
-  titles.style.justifyContent = "space-around";
-  titles.style.width = "100%";
-  titles.style.fontWeight = "bold"; // <-- жирний шрифт для заголовків
+    const titles = info.querySelector(".info-titles");
+    const values = info.querySelector(".info-values");
 
+    titles.style.display = "flex";
+    titles.style.justifyContent = "space-around";
+    titles.style.width = "100%";
+    titles.style.fontWeight = "bold";
 
-  // друга лінійка: значення
-  values.style.display = "flex";
-  values.style.justifyContent = "space-around";
-  values.style.width = "100%";
-});
+    values.style.display = "flex";
+    values.style.justifyContent = "space-around";
+    values.style.width = "100%";
+  });
 
-  newBox.refresh(); // оновлюємо екземпляр SimpleLightbox
-
+  newBox.refresh(); // оновлюємо SimpleLightbox
 }
 
 // Ця функція нічого не приймає та повинна очищати вміст контейнера галереї. Нічого не повертає.

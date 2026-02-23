@@ -2,7 +2,7 @@ import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
 import getImagesByQuery from './js/pixabay-api.js';
-import { createGallery, clearGallery, showLoader, hideLoader, showLoadMoreButton, hideLoadMoreButton } from './js/render-functions.js';
+import { createGallery, clearGallery, showLoader, hideLoader } from './js/render-functions.js';
 
 // --- Селектори ---
 const form = document.querySelector('.form');
@@ -13,9 +13,9 @@ const loadMoreBtn = document.querySelector('.load-more');
 let endMessageDiv = document.querySelector('.end-message');
 if (!endMessageDiv) {
   endMessageDiv = document.createElement('div');
-  endMessageDiv.className = 'end-message is-hidden';
+  endMessageDiv.className = 'end-message';
   endMessageDiv.textContent = "We're sorry, but you've reached the end of search results.";
-  document.querySelector('main').appendChild(endMessageDiv);
+  document.querySelector('.gallery-footer').appendChild(endMessageDiv);
 }
 
 // --- Глобальні змінні ---
@@ -27,17 +27,11 @@ let loadedImages = [];
 // --- Функція оновлення кнопки Load More ---
 function updateLoadMoreVisibility() {
   if (loadedImages.length >= totalHits) {
-    hideLoadMoreButton();
-    endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
-    iziToast.info({
-      title: 'Info',
-      message: "We're sorry, but you've reached the end of search results.",
-      position: 'center',
-      timeout: 5000
-    });
+    loadMoreBtn.classList.add('is-hidden');       // ховаємо кнопку
+    endMessageDiv.classList.add('show');          // показуємо повідомлення
   } else {
-    showLoadMoreButton();
-    endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення
+    loadMoreBtn.classList.remove('is-hidden');    // показуємо кнопку
+    endMessageDiv.classList.remove('show');       // ховаємо повідомлення
   }
 }
 
@@ -59,8 +53,8 @@ form.addEventListener('submit', async (event) => {
   currentPage = 1;
   loadedImages = [];
   clearGallery();
-  hideLoadMoreButton();
-  endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення перед новим пошуком
+  loadMoreBtn.classList.add('is-hidden');
+  endMessageDiv.classList.remove('show');
 
   showLoader();
   try {
@@ -70,19 +64,17 @@ form.addEventListener('submit', async (event) => {
 
     if (!hits || hits.length === 0) {
       endMessageDiv.textContent = "Sorry, there are no images matching your search query.";
-      endMessageDiv.classList.remove('is-hidden'); // показуємо по центру
-      iziToast.warning({
-        title: 'No results',
-        message: 'Sorry, there are no images matching your search query.',
-        position: 'center',
-        timeout: 5000
-      });
+      endMessageDiv.classList.add('show');
+//      iziToast.info({
+//        title: 'No results',
+//        message: 'Sorry, there are no images matching your search query.',
+//        position: 'center',
+//      });
       return;
     }
 
     loadedImages = [...hits];
     createGallery(loadedImages);
-
     updateLoadMoreVisibility();
 
   } catch (error) {
@@ -101,8 +93,8 @@ form.addEventListener('submit', async (event) => {
 // --- Обробник кнопки Load More ---
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
-  hideLoadMoreButton();        // ховаємо кнопку одразу
-  endMessageDiv.classList.add('is-hidden'); // ховаємо повідомлення під час завантаження
+  loadMoreBtn.classList.add('is-hidden');     // ховаємо кнопку одразу
+  endMessageDiv.classList.remove('show');     // ховаємо повідомлення під час завантаження
   showLoader();
 
   try {
@@ -110,12 +102,12 @@ loadMoreBtn.addEventListener('click', async () => {
     const hits = data.hits;
 
     if (!hits || hits.length === 0) {
-      endMessageDiv.classList.remove('is-hidden'); // показуємо повідомлення по центру
+      endMessageDiv.textContent = "We're sorry, but you've reached the end of search results.";
+      endMessageDiv.classList.add('show');
       iziToast.info({
-        title: 'Info',
+        title: 'End',
         message: "We're sorry, but you've reached the end of search results.",
         position: 'center',
-        timeout: 5000
       });
       return;
     }
