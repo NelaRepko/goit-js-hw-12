@@ -107,7 +107,7 @@
   transform: translateY(-2px);
 }
 
-/* Лоадер */
+/* Лоадер - LOADER */
 .loader-wrapper {
   display: flex;
   justify-content: center;
@@ -143,4 +143,3 @@
 .is-hidden {
   display: none !important;
 }
-
